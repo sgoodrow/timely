@@ -1,8 +1,10 @@
-import React from 'react';
+/* eslint-disable no-unused-vars */
+import React, { memo, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import {
-  Box, LinearProgress, Paper, Typography, withStyles,
+  Box, Button, LinearProgress, Paper, Typography, withStyles,
 } from '@material-ui/core';
+import moment from 'moment';
 
 const TallLinearProgress = withStyles(() => ({
   root: {
@@ -14,43 +16,63 @@ const TallLinearProgress = withStyles(() => ({
   },
 }))(LinearProgress);
 
-export default function Timer({
-  name, duration, durationS, remaining, remainingS, warningS,
+const format = (seconds) => {
+  if (seconds <= 0) {
+    return '00:00:00';
+  }
+  return moment.utc(seconds * 1000).format('HH:mm:ss');
+};
+
+function Timer({
+  uuid, name, duration, remaining, warning, setRemaining,
 }) {
-  const progress = Math.min(Math.max(remainingS / durationS, 0), 1) * 100;
-  const color = remainingS <= warningS ? 'primary' : 'secondary';
+  const [playing, setPlaying] = useState(false);
+  const progress = Math.min(Math.max(remaining / duration, 0), 1) * 100;
+  const color = remaining <= warning ? 'secondary' : 'primary';
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      const diff = playing ? 1 : 0;
+      setRemaining(uuid)(remaining - diff);
+    }, 1000);
+    return () => clearTimeout(timeout);
+  });
+
+  const handleTogglePlaying = (event) => {
+    setPlaying((current) => !current);
+    event.stopPropagation();
+  };
+
+  const restart = () => {
+    setRemaining(uuid)(duration);
+  };
 
   return (
     <Paper elevation={1}>
-      <Box p={1}>
-        <Box display="flex" flexDirection="column">
-          <Box display="flex" flexDirection="row" alignItems="center">
-            <Box flexGrow={1}>
-              <Typography variant="subtitle2">{name}</Typography>
-            </Box>
-            <Box pl={1} style={durationS === remainingS ? { visibility: 'hidden' } : {}}>
-              <Typography color="textSecondary">{duration}</Typography>
-            </Box>
-          </Box>
-          <Box w={1} display="flex" flexDirection="row" alignItems="center">
-            <Box flexGrow={1}>
-              <TallLinearProgress color={color} variant="determinate" value={progress} />
-            </Box>
-            <Box pl={1}>
-              <Typography>{remaining}</Typography>
-            </Box>
-          </Box>
+      <Box p={1} display="flex" flexDirection="row">
+        <Box display="flex" flexDirection="column" flexGrow={1} justifyContent="center" pr={1} onClick={restart}>
+          <Typography variant="subtitle2">{name}</Typography>
+          <TallLinearProgress color={color} variant="determinate" value={progress} />
+        </Box>
+        <Box display="flex" flexDirection="column" justifyContent="center" pr={1}>
+          <Typography color="textSecondary" style={duration === remaining ? { visibility: 'hidden' } : {}}>{format(duration)}</Typography>
+          <Typography>{format(remaining)}</Typography>
+        </Box>
+        <Box display="flex" flexDirection="column" justifyContent="center">
+          <Button disabled={remaining <= 0} onClick={handleTogglePlaying}>{playing ? 'Pause' : 'Play'}</Button>
         </Box>
       </Box>
     </Paper>
   );
 }
 
+export default memo(Timer);
+
 Timer.propTypes = {
+  uuid: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
-  duration: PropTypes.string.isRequired,
-  durationS: PropTypes.string.isRequired,
+  duration: PropTypes.number.isRequired,
   remaining: PropTypes.number.isRequired,
-  remainingS: PropTypes.number.isRequired,
-  warningS: PropTypes.string.isRequired,
+  warning: PropTypes.number.isRequired,
+  setRemaining: PropTypes.func.isRequired,
 };
