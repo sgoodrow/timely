@@ -5,7 +5,6 @@ import Timers from '../components/Timer/Timers';
 
 export default function Home() {
   const [timerGroups, setTimerGroups] = useState([]);
-
   return (
     <Container>
       <Search setTimerGroups={setTimerGroups} />

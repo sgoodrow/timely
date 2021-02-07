@@ -2,13 +2,17 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Box, TextField } from '@material-ui/core';
 import { Autocomplete } from '@material-ui/lab';
-import * as timerGroups from '../../resources/index';
+import * as allTimerGroups from '../../resources/index';
+
+const options = Object.keys(allTimerGroups);
 
 export default function Search({ setTimerGroups }) {
-  const options = Object.keys(timerGroups);
-
-  const handleAutocompleteChange = (_, option) => {
-    setTimerGroups(timerGroups[option]);
+  const handleAutocompleteChange = (_, selected) => {
+    const timerGroups = selected.reduce((a, s) => {
+      const group = allTimerGroups[s];
+      return a.concat(group);
+    }, []);
+    setTimerGroups(timerGroups);
   };
 
   return (
@@ -18,6 +22,7 @@ export default function Search({ setTimerGroups }) {
         onChange={handleAutocompleteChange}
         options={options}
         fullWidth
+        multiple
         renderInput={(params) => (
           <TextField
             // eslint-disable-next-line react/jsx-props-no-spreading
