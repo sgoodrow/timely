@@ -1,13 +1,29 @@
-import { Box, CssBaseline } from '@material-ui/core';
-import React from 'react';
+import {
+  createMuiTheme,
+  CssBaseline, MuiThemeProvider,
+} from '@material-ui/core';
+import React, { useState } from 'react';
 import Router from './Router';
+import Navigation from './Navigation';
 
 export default function App() {
+  const [dark, setDark] = useState(false);
+
+  const theme = createMuiTheme({
+    palette: {
+      type: dark ? 'dark' : 'light',
+    },
+  });
+
   return (
-    <CssBaseline>
-      <Box bgcolor="#f5f5f5">
+    <MuiThemeProvider theme={theme}>
+      <CssBaseline>
+        <Navigation
+          dark={dark}
+          setDark={setDark}
+        />
         <Router />
-      </Box>
-    </CssBaseline>
+      </CssBaseline>
+    </MuiThemeProvider>
   );
 }
