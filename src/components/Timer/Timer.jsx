@@ -48,7 +48,7 @@ function Timer({
   };
 
   return (
-    <Paper elevation={1}>
+    <Paper>
       <Box
         p={1}
         display="flex"

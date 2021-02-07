@@ -42,7 +42,7 @@ export default function Timers({ timerGroups }) {
   return (
     <Box display="flex" flexDirection="column">
       {sorted.map((timer) => (
-        <Box key={timer.uuid} p={0.5}>
+        <Box key={timer.uuid} pt={1}>
           <Timer
             uuid={timer.uuid}
             name={timer.name}
