@@ -1,33 +1,65 @@
-import React from 'react';
+/* eslint-disable react/jsx-props-no-spreading */
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Box, TextField } from '@material-ui/core';
 import { Autocomplete } from '@material-ui/lab';
-import * as allTimerGroups from '../../resources/index';
+import * as groups from '../../resources/index';
 
-const options = Object.keys(allTimerGroups);
+const timersByGroupName = Object
+  .entries(groups)
+  .reduce((m, [name, timers]) => {
+    Object.assign(m, { [name]: timers });
+    return m;
+  }, {});
 
-export default function Search({ setTimerGroups }) {
-  const handleAutocompleteChange = (_, selected) => {
-    const timerGroups = selected.reduce((a, s) => {
-      const group = allTimerGroups[s];
-      return a.concat(group);
-    }, []);
-    setTimerGroups(timerGroups);
+const zoneNames = Object.keys(timersByGroupName);
+
+export default function Search({ setSelectedTimers }) {
+  const [values, setValues] = useState('');
+  const [timers, setTimers] = useState({});
+
+  const handleGroupChange = (_, name) => {
+    setTimers(name ? timersByGroupName[name] : {});
+    setValues([]);
+    setSelectedTimers([]);
   };
 
+  const handleValueChange = (_, selected) => {
+    setValues(selected);
+    setSelectedTimers(selected.reduce((a, s) => a.concat(timers[s]), []));
+  };
+
+  const timerNames = Object.keys(timers);
+
   return (
-    <Box>
+    <Box display="flex" flexDirection="row">
+      <Box pr={1}>
+        <Autocomplete
+          id="group-select"
+          onChange={handleGroupChange}
+          options={zoneNames}
+          style={{ width: '20em' }}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label="Group"
+              variant="outlined"
+            />
+          )}
+        />
+      </Box>
       <Autocomplete
-        id="search-select"
-        onChange={handleAutocompleteChange}
-        options={options}
+        id="timers-select"
+        value={values}
+        onChange={handleValueChange}
+        options={timerNames}
         fullWidth
         multiple
+        disabled={!timerNames.length}
         renderInput={(params) => (
           <TextField
-            // eslint-disable-next-line react/jsx-props-no-spreading
             {...params}
-            label="Timer Groups"
+            label="Timers"
             variant="outlined"
           />
         )}
@@ -37,5 +69,5 @@ export default function Search({ setTimerGroups }) {
 }
 
 Search.propTypes = {
-  setTimerGroups: PropTypes.func.isRequired,
+  setSelectedTimers: PropTypes.func.isRequired,
 };
