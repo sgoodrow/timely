@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import React, { memo, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import {
@@ -24,7 +23,7 @@ const format = (seconds) => {
 };
 
 function Timer({
-  uuid, name, duration, remaining, warning, setRemaining,
+  uuid, name, duration, remaining, warning = 0, setRemaining,
 }) {
   const [playing, setPlaying] = useState(false);
   const progress = Math.min(Math.max(remaining / duration, 0), 1) * 100;
@@ -38,28 +37,70 @@ function Timer({
     return () => clearTimeout(timeout);
   });
 
-  const handleTogglePlaying = (event) => {
+  const handleClickButton = (event) => {
     setPlaying((current) => !current);
     event.stopPropagation();
   };
 
-  const restart = () => {
+  const handleClickProgressBar = () => {
     setRemaining(uuid)(duration);
+    setPlaying(true);
   };
 
   return (
     <Paper elevation={1}>
-      <Box p={1} display="flex" flexDirection="row">
-        <Box display="flex" flexDirection="column" flexGrow={1} justifyContent="center" pr={1} onClick={restart}>
-          <Typography variant="subtitle2">{name}</Typography>
-          <TallLinearProgress color={color} variant="determinate" value={progress} />
+      <Box
+        p={1}
+        display="flex"
+        flexDirection="row"
+      >
+        <Box
+          display="flex"
+          flexDirection="column"
+          flexGrow={1}
+          justifyContent="center"
+          pr={1}
+          onClick={handleClickProgressBar}
+        >
+          <Typography
+            variant="subtitle2"
+          >
+            {name}
+
+          </Typography>
+          <TallLinearProgress
+            color={color}
+            variant="determinate"
+            value={progress}
+          />
         </Box>
-        <Box display="flex" flexDirection="column" justifyContent="center" pr={1}>
-          <Typography color="textSecondary" style={duration === remaining ? { visibility: 'hidden' } : {}}>{format(duration)}</Typography>
+        <Box
+          display="flex"
+          flexDirection="column"
+          justifyContent="center"
+          pr={1}
+        >
+          <Typography
+            color="textSecondary"
+            style={duration === remaining ? { visibility: 'hidden' } : {}}
+          >
+            {format(duration)}
+
+          </Typography>
           <Typography>{format(remaining)}</Typography>
         </Box>
-        <Box display="flex" flexDirection="column" justifyContent="center">
-          <Button disabled={remaining <= 0} onClick={handleTogglePlaying}>{playing ? 'Pause' : 'Play'}</Button>
+        <Box
+          display="flex"
+          flexDirection="column"
+          justifyContent="center"
+        >
+          <Button
+            disabled={remaining <= 0}
+            onClick={handleClickButton}
+          >
+            {playing ? 'Pause' : 'Play'}
+
+          </Button>
         </Box>
       </Box>
     </Paper>
@@ -68,11 +109,15 @@ function Timer({
 
 export default memo(Timer);
 
+Timer.defaultProps = {
+  warning: 0,
+};
+
 Timer.propTypes = {
   uuid: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
   duration: PropTypes.number.isRequired,
   remaining: PropTypes.number.isRequired,
-  warning: PropTypes.number.isRequired,
   setRemaining: PropTypes.func.isRequired,
+  warning: PropTypes.number,
 };
