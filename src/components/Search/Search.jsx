@@ -1,43 +1,29 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import React, { useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { Box, TextField } from '@material-ui/core';
 import { Autocomplete } from '@material-ui/lab';
-import * as groups from '../../resources/index';
 
-const timersByGroupName = Object
-  .entries(groups)
-  .reduce((m, [name, timers]) => {
-    Object.assign(m, { [name]: timers });
-    return m;
-  }, {});
-
-const zoneNames = Object.keys(timersByGroupName);
-
-export default function Search({ setSelectedTimers }) {
-  const [values, setValues] = useState('');
-  const [timers, setTimers] = useState({});
-
+export default function Search({
+  groupName, setGroupName, groupNames, timers, setTimers, timerNames,
+}) {
   const handleGroupChange = (_, name) => {
-    setTimers(name ? timersByGroupName[name] : {});
-    setValues([]);
-    setSelectedTimers([]);
+    setGroupName(name);
+    setTimers([]);
   };
 
   const handleValueChange = (_, selected) => {
-    setValues(selected);
-    setSelectedTimers(selected.reduce((a, s) => a.concat(timers[s]), []));
+    setTimers(selected);
   };
-
-  const timerNames = Object.keys(timers);
 
   return (
     <Box display="flex" flexDirection="row">
       <Box pr={1}>
         <Autocomplete
           id="group-select"
+          value={groupName}
           onChange={handleGroupChange}
-          options={zoneNames}
+          options={groupNames}
           style={{ width: '20em' }}
           renderInput={(params) => (
             <TextField
@@ -50,7 +36,7 @@ export default function Search({ setSelectedTimers }) {
       </Box>
       <Autocomplete
         id="timers-select"
-        value={values}
+        value={timers}
         onChange={handleValueChange}
         options={timerNames}
         fullWidth
@@ -69,5 +55,10 @@ export default function Search({ setSelectedTimers }) {
 }
 
 Search.propTypes = {
-  setSelectedTimers: PropTypes.func.isRequired,
+  groupName: PropTypes.string.isRequired,
+  setGroupName: PropTypes.func.isRequired,
+  groupNames: PropTypes.arrayOf(PropTypes.string.isRequired).isRequired,
+  timers: PropTypes.arrayOf(PropTypes.string.isRequired).isRequired,
+  setTimers: PropTypes.func.isRequired,
+  timerNames: PropTypes.arrayOf(PropTypes.string.isRequired).isRequired,
 };

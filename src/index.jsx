@@ -1,11 +1,17 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { BrowserRouter, Route } from 'react-router-dom';
+import { QueryParamProvider } from 'use-query-params';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <BrowserRouter>
+      <QueryParamProvider ReactRouterRoute={Route}>
+        <App />
+      </QueryParamProvider>
+    </BrowserRouter>
   </React.StrictMode>,
   document.getElementById('root'),
 );

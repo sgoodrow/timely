@@ -2,12 +2,13 @@ import {
   createMuiTheme,
   CssBaseline, MuiThemeProvider,
 } from '@material-ui/core';
-import React, { useState } from 'react';
+import React from 'react';
+import { useQueryParam, BooleanParam } from 'use-query-params';
 import Router from './Router';
 import Navigation from './Navigation';
 
 export default function App() {
-  const [dark, setDark] = useState(false);
+  const [dark = false, setDark] = useQueryParam('dark', BooleanParam);
 
   const theme = createMuiTheme({
     palette: {
@@ -25,5 +26,6 @@ export default function App() {
         <Router />
       </CssBaseline>
     </MuiThemeProvider>
+
   );
 }
