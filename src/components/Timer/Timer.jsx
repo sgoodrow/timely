@@ -26,13 +26,16 @@ function Timer({
   uuid, name, duration, remaining, warning = 0, setRemaining,
 }) {
   const [playing, setPlaying] = useState(false);
+
   const progress = Math.min(Math.max(remaining / duration, 0), 1) * 100;
   const color = remaining <= warning ? 'secondary' : 'primary';
 
   useEffect(() => {
+    const start = new Date().getTime();
     const timeout = setTimeout(() => {
-      const diff = playing ? 1 : 0;
-      setRemaining(uuid)(remaining - diff);
+      const final = new Date().getTime();
+      const diff = playing ? (final - start) / 1000 : 0;
+      setRemaining(uuid)(Math.max(remaining - diff, 0));
     }, 1000);
     return () => clearTimeout(timeout);
   });
