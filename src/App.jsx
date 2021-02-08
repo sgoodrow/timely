@@ -3,12 +3,12 @@ import {
   CssBaseline, MuiThemeProvider,
 } from '@material-ui/core';
 import React from 'react';
-import { useQueryParam, BooleanParam } from 'use-query-params';
+import useLocalStorage from 'use-local-storage';
 import Router from './Router';
 import Navigation from './Navigation';
 
 export default function App() {
-  const [dark = false, setDark] = useQueryParam('dark', BooleanParam);
+  const [dark, setDark] = useLocalStorage('dark', true);
 
   const theme = createMuiTheme({
     palette: {
@@ -26,6 +26,5 @@ export default function App() {
         <Router />
       </CssBaseline>
     </MuiThemeProvider>
-
   );
 }

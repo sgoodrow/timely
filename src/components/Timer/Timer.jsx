@@ -19,7 +19,7 @@ const format = (seconds) => {
   if (seconds <= 0) {
     return '00:00:00';
   }
-  return moment.utc(seconds * 1000).format('HH:mm:ss');
+  return moment.utc(seconds * 1000).format('H[h] mm[m] ss:S[s]');
 };
 
 function Timer({
@@ -36,7 +36,7 @@ function Timer({
       const final = new Date().getTime();
       const diff = playing ? (final - start) / 1000 : 0;
       setRemaining(uuid)(Math.max(remaining - diff, 0));
-    }, 1000);
+    }, 100);
     return () => clearTimeout(timeout);
   });
 
