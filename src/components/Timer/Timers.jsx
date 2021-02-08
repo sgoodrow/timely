@@ -7,7 +7,7 @@ import moment from 'moment';
 import PropTypes from 'prop-types';
 import Timer from './Timer';
 
-const seconds = (duration) => (duration ? moment.duration(duration).asSeconds() / 100 : undefined);
+const seconds = (duration) => (duration ? moment.duration(duration).asSeconds() : undefined);
 
 const createTimer = (inputs) => ({
   name: inputs.name,
