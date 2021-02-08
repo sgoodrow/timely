@@ -1,34 +1,26 @@
 import React, { memo, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import {
-  Box, Button, LinearProgress, Paper, Typography, withStyles,
+  Box, ButtonBase, fade, IconButton, makeStyles, Paper, Typography,
 } from '@material-ui/core';
-import moment from 'moment';
+import { Pause, PlayArrow } from '@material-ui/icons';
+import Duration from './Duration';
+import Bar from './Bar';
 
-const TallLinearProgress = withStyles(() => ({
+const useStyles = makeStyles((theme) => ({
   root: {
-    height: '1em',
-    borderRadius: '.2em',
+    display: 'flex',
+    width: '100%',
+    '&:hover, &$focusVisible': {
+      backgroundColor: fade(theme.palette.common.white, 0.1),
+    },
   },
-  bar: {
-    borderRadius: '.2em',
-  },
-}))(LinearProgress);
-
-const format = (seconds) => {
-  if (seconds <= 0) {
-    return '00:00:00';
-  }
-  return moment.utc(seconds * 1000).format('H[h] mm[m] ss:S[s]');
-};
+}));
 
 function Timer({
   uuid, name, duration, remaining, warning = 0, setRemaining,
 }) {
   const [playing, setPlaying] = useState(false);
-
-  const progress = Math.min(Math.max(remaining / duration, 0), 1) * 100;
-  const color = remaining <= warning ? 'secondary' : 'primary';
 
   useEffect(() => {
     const start = new Date().getTime();
@@ -36,7 +28,7 @@ function Timer({
       const final = new Date().getTime();
       const diff = playing ? (final - start) / 1000 : 0;
       setRemaining(uuid)(Math.max(remaining - diff, 0));
-    }, 100);
+    }, 1000);
     return () => clearTimeout(timeout);
   });
 
@@ -50,62 +42,57 @@ function Timer({
     setPlaying(true);
   };
 
+  const classes = useStyles();
+
   return (
     <Paper>
-      <Box
-        p={1}
-        display="flex"
-        flexDirection="row"
+      <ButtonBase
+        className={classes.root}
+        onClick={handleClickProgressBar}
       >
         <Box
           display="flex"
           flexDirection="column"
           flexGrow={1}
+        >
+          <Box p={1}>
+            <Typography style={{ textAlign: 'left' }} variant="subtitle2">
+              {name}
+            </Typography>
+            <Bar
+              duration={duration}
+              remaining={remaining}
+              warning={warning}
+              playing={playing}
+            />
+          </Box>
+        </Box>
+        <Box
+          display="flex"
+          flexDirection="column"
           justifyContent="center"
           pr={1}
-          onClick={handleClickProgressBar}
         >
-          <Typography
-            variant="subtitle2"
-          >
-            {name}
-
-          </Typography>
-          <TallLinearProgress
-            color={color}
-            variant="determinate"
-            value={progress}
+          <Duration
+            duration={duration}
+            hide={duration === remaining}
+            opacity={0.5}
           />
-        </Box>
-        <Box
-          display="flex"
-          flexDirection="column"
-          justifyContent="center"
-          pr={1}
-        >
-          <Typography
-            color="textSecondary"
-            style={duration === remaining ? { visibility: 'hidden' } : {}}
-          >
-            {format(duration)}
-
-          </Typography>
-          <Typography>{format(remaining)}</Typography>
+          <Duration duration={remaining} />
         </Box>
         <Box
           display="flex"
           flexDirection="column"
           justifyContent="center"
         >
-          <Button
+          <IconButton
             disabled={remaining <= 0}
             onClick={handleClickButton}
           >
-            {playing ? 'Pause' : 'Play'}
-
-          </Button>
+            {playing ? <Pause /> : <PlayArrow />}
+          </IconButton>
         </Box>
-      </Box>
+      </ButtonBase>
     </Paper>
   );
 }

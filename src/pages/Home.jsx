@@ -1,5 +1,5 @@
 import { Box } from '@material-ui/core';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { ArrayParam, StringParam, useQueryParam } from 'use-query-params';
 import Search from '../components/Search/Search';
 import Timers from '../components/Timer/Timers';
@@ -19,7 +19,7 @@ export default function Home() {
   const [timers = [], setTimers] = useQueryParam('timers', ArrayParam);
 
   const groupTimers = groupName ? timersByGroupName[groupName] : {};
-  const timerGroups = timers.reduce((a, s) => a.concat(groupTimers[s]), []);
+  const timerGroups = useMemo(() => timers.reduce((a, s) => a.concat(groupTimers[s]), []), []);
 
   return (
     <Box p={1}>

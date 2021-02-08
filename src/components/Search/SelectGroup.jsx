@@ -14,10 +14,10 @@ export default function SelectGroup({
   return (
     <Autocomplete
       id="group-select"
+      fullWidth
       value={groupName}
       onChange={handleGroupChange}
       options={groupNames}
-      style={{ width: '20em' }}
       renderInput={(params) => (
         <TextField
           {...params}

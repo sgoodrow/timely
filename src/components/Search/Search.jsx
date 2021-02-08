@@ -1,7 +1,7 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Box, Paper } from '@material-ui/core';
+import { Box, Grid, Paper } from '@material-ui/core';
 import SelectTimers from './SelectTimers';
 import SelectGroup from './SelectGroup';
 
@@ -10,20 +10,24 @@ export default function Search({
 }) {
   return (
     <Paper>
-      <Box display="flex" flexDirection="row" p={1}>
-        <Box pr={1}>
-          <SelectGroup
-            groupName={groupName}
-            setGroupName={setGroupName}
-            groupNames={groupNames}
-            setTimers={setTimers}
-          />
-        </Box>
-        <SelectTimers
-          timers={timers}
-          setTimers={setTimers}
-          timerNames={timerNames}
-        />
+      <Box p={1}>
+        <Grid container spacing={1}>
+          <Grid item xs={6}>
+            <SelectGroup
+              groupName={groupName}
+              setGroupName={setGroupName}
+              groupNames={groupNames}
+              setTimers={setTimers}
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <SelectTimers
+              timers={timers}
+              setTimers={setTimers}
+              timerNames={timerNames}
+            />
+          </Grid>
+        </Grid>
       </Box>
     </Paper>
   );

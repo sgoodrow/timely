@@ -1,11 +1,13 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, {
+  memo, useCallback, useEffect, useState,
+} from 'react';
 import { orderBy, uniqueId } from 'lodash';
 import { Box } from '@material-ui/core';
 import moment from 'moment';
 import PropTypes from 'prop-types';
 import Timer from './Timer';
 
-const seconds = (duration) => (duration ? moment.duration(duration).asSeconds() : undefined);
+const seconds = (duration) => (duration ? moment.duration(duration).asSeconds() / 100 : undefined);
 
 const createTimer = (inputs) => ({
   name: inputs.name,
@@ -21,7 +23,7 @@ const createTimers = (inputs) => inputs.reduce((m, i) => {
   return m;
 }, {});
 
-export default function Timers({ timerGroups }) {
+function Timers({ timerGroups }) {
   const [timers, setTimers] = useState(createTimers(timerGroups));
 
   useEffect(() => {
@@ -57,6 +59,8 @@ export default function Timers({ timerGroups }) {
     </Box>
   );
 }
+
+export default memo(Timers);
 
 Timers.propTypes = {
   timerGroups: PropTypes.arrayOf(PropTypes.shape({
