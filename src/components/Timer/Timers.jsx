@@ -39,7 +39,7 @@ function Timers({ timerGroups }) {
     updateTimerRemaining(uuid, remaining);
   }, []);
 
-  const sorted = orderBy(Object.values(timers), ['remaining', 'name', 'uuid']);
+  const sorted = orderBy(Object.values(timers), ['remaining', 'playing', 'name', 'uuid']);
 
   return (
     <Box display="flex" flexDirection="column">

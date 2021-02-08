@@ -9,7 +9,6 @@ import Bar from './Bar';
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    display: 'flex',
     width: '100%',
     '&:hover, &$focusVisible': {
       backgroundColor: fade(theme.palette.common.white, 0.1),
@@ -28,7 +27,7 @@ function Timer({
       const final = new Date().getTime();
       const diff = playing ? (final - start) / 1000 : 0;
       setRemaining(uuid)(Math.max(remaining - diff, 0));
-    }, 1000);
+    }, 100);
     return () => clearTimeout(timeout);
   });
 
@@ -46,40 +45,42 @@ function Timer({
 
   return (
     <Paper>
-      <ButtonBase
-        className={classes.root}
-        onClick={handleClickProgressBar}
-      >
-        <Box
-          display="flex"
-          flexDirection="column"
-          flexGrow={1}
+      <Box display="flex">
+        <ButtonBase
+          className={classes.root}
+          onClick={handleClickProgressBar}
         >
-          <Box p={1}>
-            <Typography style={{ textAlign: 'left' }} variant="subtitle2">
-              {name}
-            </Typography>
-            <Bar
-              duration={duration}
-              remaining={remaining}
-              warning={warning}
-              playing={playing}
-            />
+          <Box
+            display="flex"
+            flexDirection="column"
+            flexGrow={1}
+          >
+            <Box p={1}>
+              <Typography style={{ textAlign: 'left' }} variant="subtitle2">
+                {name}
+              </Typography>
+              <Bar
+                duration={duration}
+                remaining={remaining}
+                warning={warning}
+                playing={playing}
+              />
+            </Box>
           </Box>
-        </Box>
-        <Box
-          display="flex"
-          flexDirection="column"
-          justifyContent="center"
-          pr={1}
-        >
-          <Duration
-            duration={duration}
-            hide={duration === remaining}
-            opacity={0.5}
-          />
-          <Duration duration={remaining} />
-        </Box>
+          <Box
+            display="flex"
+            flexDirection="column"
+            justifyContent="center"
+            pr={1}
+          >
+            <Duration
+              duration={duration}
+              hide={duration === remaining && !playing}
+              opacity={0.5}
+            />
+            <Duration duration={remaining} />
+          </Box>
+        </ButtonBase>
         <Box
           display="flex"
           flexDirection="column"
@@ -92,7 +93,7 @@ function Timer({
             {playing ? <Pause /> : <PlayArrow />}
           </IconButton>
         </Box>
-      </ButtonBase>
+      </Box>
     </Paper>
   );
 }
