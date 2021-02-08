@@ -1,6 +1,8 @@
-# Timerly is a webapp for sharing configurable timers.
+# Timerly
 
-Check it out at [timerly](https://timerly.vercel.app/].
+An app for sharing configurable timers.
+
+Deployed at https://timerly.vercel.app/
 
 ### Local Development
 
