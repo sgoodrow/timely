@@ -19,7 +19,9 @@ export default function Home() {
   const [timers = [], setTimers] = useQueryParam('timers', ArrayParam);
 
   const groupTimers = groupName ? timersByGroupName[groupName] : {};
-  const timerGroups = useMemo(() => timers.reduce((a, s) => a.concat(groupTimers[s]), []), []);
+  const timerGroups = useMemo(
+    () => (timers.reduce((a, s) => a.concat(groupTimers[s]), [])), [timers],
+  );
 
   return (
     <Box p={1}>
