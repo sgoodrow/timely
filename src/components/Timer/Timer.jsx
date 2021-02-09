@@ -31,14 +31,23 @@ function Timer({
     return () => clearTimeout(timeout);
   });
 
-  const handleClickButton = (event) => {
+  const togglePlaying = () => {
     setPlaying((current) => !current);
+  };
+
+  const handleClickButton = (event) => {
+    togglePlaying();
     event.stopPropagation();
   };
 
   const handleClickProgressBar = () => {
-    setRemaining(uuid)(duration);
-    setPlaying(true);
+    if (remaining === 0) {
+      setRemaining(uuid)(duration);
+      setPlaying(true);
+      return;
+    }
+
+    togglePlaying();
   };
 
   const classes = useStyles();
