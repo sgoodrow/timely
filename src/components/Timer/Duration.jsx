@@ -4,7 +4,7 @@ import { Box, Typography } from '@material-ui/core';
 import moment from 'moment';
 
 const format = (seconds) => {
-  const formatted = seconds > 0 ? moment.utc(seconds * 1000).format('H:mm:ss') : '00:00:00';
+  const formatted = moment.utc(Math.max(seconds * 1000, 0)).format('H:mm:ss');
   return formatted.split(':');
 };
 
