@@ -8,10 +8,6 @@ import {
 import React from 'react';
 
 export default function Navigation({ dark, setDark }) {
-  const handleClickGithub = () => {
-    window.location.href = 'https://github.com/sgoodrow/timerly/';
-  };
-
   const handleThemeChange = () => {
     setDark((d) => !d);
   };
@@ -26,14 +22,15 @@ export default function Navigation({ dark, setDark }) {
             Timerly
           </Typography>
         </Box>
-        <IconButton
-          aria-label="git"
-          onClick={handleClickGithub}
-        >
-          {dark
-            ? <GitHub />
-            : <GitHub style={style} />}
-        </IconButton>
+        <a href="https://github.com/sgoodrow/timerly/">
+          <IconButton
+            aria-label="git"
+          >
+            {dark
+              ? <GitHub />
+              : <GitHub style={style} />}
+          </IconButton>
+        </a>
         <IconButton
           aria-label="theme"
           onClick={handleThemeChange}
