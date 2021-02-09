@@ -6,10 +6,10 @@ export default [
   },
   {
     name: 'Medium',
-    duration: '00:01:00',
+    duration: '00:00:12',
   },
   {
     name: 'Long',
-    duration: '00:05:00',
+    duration: '00:00:14',
   },
 ];

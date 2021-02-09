@@ -16,6 +16,9 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+const pixels = (rem) => rem * parseFloat(getComputedStyle(document.documentElement).fontSize);
+export const height = pixels(3.8);
+
 function Timer({
   uuid, name, duration, remaining, warning = 0, setRemaining,
 }) {

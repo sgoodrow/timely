@@ -5,7 +5,8 @@ import { orderBy, uniqueId } from 'lodash';
 import { Box } from '@material-ui/core';
 import moment from 'moment';
 import PropTypes from 'prop-types';
-import Timer from './Timer';
+import { useTransition, animated } from 'react-spring';
+import Timer, { height } from './Timer';
 
 const seconds = (duration) => (duration ? moment.duration(duration).asSeconds() : undefined);
 
@@ -48,20 +49,39 @@ function Timers({ names, groups }) {
 
   const sorted = orderBy(Object.values(timers), ['remaining', 'playing', 'name', 'uuid']).filter((t) => !!t.uuid);
 
+  const transitions = useTransition(
+    sorted.map((t, i) => ({ ...t, y: i * height })),
+    (t) => t.uuid,
+    {
+      from: { position: 'absolute', opacity: 0, width: '0%' },
+      leave: { height: 0, opacity: 0 },
+      enter: ({ y }) => ({ y, opacity: 1, width: '100%' }),
+      update: ({ y }) => ({ y }),
+    },
+  );
+
   return (
-    <Box display="flex" flexDirection="column">
-      {sorted.map((t) => (
-        <Box key={t.uuid} pt={1}>
-          <Timer
-            uuid={t.uuid}
-            name={t.name}
-            duration={t.duration}
-            remaining={t.remaining}
-            warning={t.warning}
-            playing={t.playing}
-            setRemaining={setRemaining}
-          />
-        </Box>
+    <Box position="relative">
+      {transitions.map(({ item, props: { y, ...rest }, key }) => (
+        <animated.div
+          key={key}
+          style={{
+            transform: y.interpolate((yi) => `translate3d(0,${yi}px,0)`),
+            ...rest,
+          }}
+        >
+          <Box pt={1}>
+            <Timer
+              uuid={item.uuid}
+              name={item.name}
+              duration={item.duration}
+              remaining={item.remaining}
+              warning={item.warning}
+              playing={item.playing}
+              setRemaining={setRemaining}
+            />
+          </Box>
+        </animated.div>
       ))}
     </Box>
   );

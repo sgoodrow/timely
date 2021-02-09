@@ -5,11 +5,11 @@ import { green, grey, red } from '@material-ui/core/colors';
 
 const useStyles = makeStyles({
   root: {
-    height: '1em',
-    borderRadius: '.2em',
+    height: '1rem',
+    borderRadius: '0.2rem',
   },
   bar: (props) => ({
-    borderRadius: '.2em',
+    borderRadius: '0.2rem',
     backgroundColor: props.color,
   }),
   colorPrimary: (props) => ({

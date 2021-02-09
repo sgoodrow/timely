@@ -1,6 +1,6 @@
 export default [
   {
     name: 'One Minute',
-    duration: '00:00:10',
+    duration: '01:00:00',
   },
 ];
