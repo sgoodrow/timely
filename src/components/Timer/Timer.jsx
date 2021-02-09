@@ -10,7 +10,7 @@ import Bar from './Bar';
 const useStyles = makeStyles((theme) => ({
   root: {
     width: '100%',
-    '&:hover, &$focusVisible': {
+    '&:hover': {
       backgroundColor: fade(theme.palette.common.white, 0.1),
     },
   },
@@ -27,7 +27,7 @@ function Timer({
       const final = new Date().getTime();
       const diff = playing ? (final - start) / 1000 : 0;
       setRemaining(uuid)(Math.max(remaining - diff, 0));
-    }, 100);
+    }, 300);
     return () => clearTimeout(timeout);
   });
 

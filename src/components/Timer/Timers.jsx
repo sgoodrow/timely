@@ -9,7 +9,7 @@ import Timer from './Timer';
 
 const seconds = (duration) => (duration ? moment.duration(duration).asSeconds() : undefined);
 
-const createTimer = (inputs) => ({
+const timer = (inputs) => ({
   name: inputs.name,
   duration: seconds(inputs.duration),
   warning: seconds(inputs.warning),
@@ -17,41 +17,48 @@ const createTimer = (inputs) => ({
   uuid: uniqueId(),
 });
 
-const createTimers = (inputs) => inputs.reduce((m, i) => {
-  const timer = createTimer(i);
-  Object.assign(m, { [timer.uuid]: timer });
-  return m;
-}, {});
+const assign = (m, t) => Object.assign(m, { [t.uuid]: t });
+const create = (inputs) => inputs.reduce((m, i) => assign(m, timer(i)), {});
+const filter = (groups, names) => names.reduce((a, n) => a.concat(groups[n]), []);
 
-function Timers({ timerGroups }) {
-  const [timers, setTimers] = useState(createTimers(timerGroups));
+function Timers({ names, groups }) {
+  const [timers, setTimers] = useState(create(filter(groups, names)));
 
   useEffect(() => {
-    const newTimers = createTimers(timerGroups);
-    setTimers(newTimers);
-  }, [timerGroups]);
+    setTimers((prevTimers) => {
+      // Look through the previous timers and preserve any that
+      // are still selected in the new array; this ensures their
+      // remaining duration does not reset.
+      const inputs = filter(groups, names);
+      const timerNames = inputs.map((i) => i.name);
+      const existingTimers = Object.values(prevTimers)
+        .filter((t) => timerNames.includes(t.name))
+        .reduce((m, t) => assign(m, t), {});
 
-  const updateTimerRemaining = (uuid, remaining) => {
-    setTimers((prevTimers) => ({ ...prevTimers, [uuid]: { ...prevTimers[uuid], remaining } }));
-  };
+      // Create new timers for the remainder.
+      const existingTimerNames = Object.values(existingTimers).map((t) => t.name);
+      const newTimerInputs = inputs.filter((i) => !existingTimerNames.includes(i.name));
+      return { ...existingTimers, ...create(newTimerInputs) };
+    });
+  }, [names, groups]);
 
   const setRemaining = useCallback((uuid) => (remaining) => {
-    updateTimerRemaining(uuid, remaining);
+    setTimers((prev) => ({ ...prev, [uuid]: { ...prev[uuid], remaining } }));
   }, []);
 
-  const sorted = orderBy(Object.values(timers), ['remaining', 'playing', 'name', 'uuid']);
+  const sorted = orderBy(Object.values(timers), ['remaining', 'playing', 'name', 'uuid']).filter((t) => !!t.uuid);
 
   return (
     <Box display="flex" flexDirection="column">
-      {sorted.map((timer) => (
-        <Box key={timer.uuid} pt={1}>
+      {sorted.map((t) => (
+        <Box key={t.uuid} pt={1}>
           <Timer
-            uuid={timer.uuid}
-            name={timer.name}
-            duration={timer.duration}
-            remaining={timer.remaining}
-            warning={timer.warning}
-            playing={timer.playing}
+            uuid={t.uuid}
+            name={t.name}
+            duration={t.duration}
+            remaining={t.remaining}
+            warning={t.warning}
+            playing={t.playing}
             setRemaining={setRemaining}
           />
         </Box>
@@ -63,9 +70,10 @@ function Timers({ timerGroups }) {
 export default memo(Timers);
 
 Timers.propTypes = {
-  timerGroups: PropTypes.arrayOf(PropTypes.shape({
+  names: PropTypes.arrayOf(PropTypes.string).isRequired,
+  groups: PropTypes.objectOf(PropTypes.arrayOf(PropTypes.shape({
     name: PropTypes.string.isRequired,
     duration: PropTypes.string.isRequired,
     warning: PropTypes.string,
-  })).isRequired,
+  }))).isRequired,
 };

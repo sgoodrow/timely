@@ -1,27 +1,20 @@
 import { Box } from '@material-ui/core';
-import React, { useMemo } from 'react';
+import React from 'react';
 import { ArrayParam, StringParam, useQueryParam } from 'use-query-params';
 import Search from '../components/Search/Search';
 import Timers from '../components/Timer/Timers';
 import * as groups from '../resources/index';
 
-const timersByGroupName = Object
+const timerDataByGroupNames = Object
   .entries(groups)
-  .reduce((m, [name, timers]) => {
-    Object.assign(m, { [name]: timers });
-    return m;
-  }, {});
+  .reduce((m, [name, timers]) => Object.assign(m, { [name]: timers }), {});
 
-const groupNames = Object.keys(timersByGroupName);
+const groupNames = Object.keys(timerDataByGroupNames);
 
 export default function Home() {
   const [groupName = '', setGroupName] = useQueryParam('group', StringParam);
   const [timers = [], setTimers] = useQueryParam('timers', ArrayParam);
-
-  const groupTimers = groupName ? timersByGroupName[groupName] : {};
-  const timerGroups = useMemo(
-    () => (timers.reduce((a, s) => a.concat(groupTimers[s]), [])), [timers],
-  );
+  const data = timerDataByGroupNames[groupName] || {};
 
   return (
     <Box p={1}>
@@ -31,9 +24,12 @@ export default function Home() {
         groupNames={groupNames}
         timers={timers}
         setTimers={setTimers}
-        timerNames={Object.keys(groupTimers)}
+        timerNames={Object.keys(data)}
       />
-      <Timers timerGroups={timerGroups} />
+      <Timers
+        names={timers}
+        groups={data}
+      />
     </Box>
   );
 }
