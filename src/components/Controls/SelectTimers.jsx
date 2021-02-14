@@ -22,7 +22,7 @@ export default function SelectTimers({
       renderInput={(params) => (
         <TextField
           {...params}
-          label="Timers"
+          label="Preset Timers"
           variant="outlined"
         />
       )}

@@ -8,7 +8,7 @@ import PropTypes from 'prop-types';
 import { useTransition, animated } from 'react-spring';
 import Timer, { height } from './Timer';
 
-const seconds = (duration) => (duration ? moment.duration(duration).asSeconds() : undefined);
+export const seconds = (duration) => moment.duration(duration).asSeconds();
 
 const timer = (inputs) => ({
   name: inputs.name,
@@ -22,15 +22,18 @@ const assign = (m, t) => Object.assign(m, { [t.uuid]: t });
 const create = (inputs) => inputs.reduce((m, i) => assign(m, timer(i)), {});
 const filter = (groups, names) => names.reduce((a, n) => a.concat(groups[n]), []);
 
-function Timers({ names, groups }) {
-  const [timers, setTimers] = useState(create(filter(groups, names)));
+function Timers({
+  names, groups, customTimers, remCustom,
+}) {
+  console.log(remCustom);
+  const [timers, setTimers] = useState(create([...customTimers, ...filter(groups, names)]));
 
   useEffect(() => {
     setTimers((prevTimers) => {
       // Look through the previous timers and preserve any that
       // are still selected in the new array; this ensures their
       // remaining duration does not reset.
-      const inputs = filter(groups, names);
+      const inputs = [...customTimers, ...filter(groups, names)];
       const timerNames = inputs.map((i) => i.name);
       const existingTimers = Object.values(prevTimers)
         .filter((t) => timerNames.includes(t.name))
@@ -41,7 +44,7 @@ function Timers({ names, groups }) {
       const newTimerInputs = inputs.filter((i) => !existingTimerNames.includes(i.name));
       return { ...existingTimers, ...create(newTimerInputs) };
     });
-  }, [names, groups]);
+  }, [names, groups, customTimers]);
 
   const setRemaining = useCallback((uuid) => (remaining) => {
     setTimers((prev) => ({ ...prev, [uuid]: { ...prev[uuid], remaining } }));
@@ -89,11 +92,15 @@ function Timers({ names, groups }) {
 
 export default memo(Timers);
 
+const timerShape = PropTypes.shape({
+  name: PropTypes.string.isRequired,
+  duration: PropTypes.string.isRequired,
+  warning: PropTypes.string,
+});
+
 Timers.propTypes = {
   names: PropTypes.arrayOf(PropTypes.string).isRequired,
-  groups: PropTypes.objectOf(PropTypes.arrayOf(PropTypes.shape({
-    name: PropTypes.string.isRequired,
-    duration: PropTypes.string.isRequired,
-    warning: PropTypes.string,
-  }))).isRequired,
+  groups: PropTypes.objectOf(PropTypes.arrayOf(timerShape)).isRequired,
+  customTimers: PropTypes.arrayOf(PropTypes.shape(timerShape)).isRequired,
+  remCustom: PropTypes.func.isRequired,
 };
