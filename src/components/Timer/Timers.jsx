@@ -25,7 +25,7 @@ const filter = (groups, names) => names.reduce((a, n) => a.concat(groups[n]), []
 function Timers({
   names, groups, customTimers, remCustom,
 }) {
-  console.log(remCustom);
+  remCustom = () = {};
   const [timers, setTimers] = useState(create([...customTimers, ...filter(groups, names)]));
 
   useEffect(() => {
