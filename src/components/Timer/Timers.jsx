@@ -25,9 +25,11 @@ const filter = (groups, names) => names.reduce((a, n) => a.concat(groups[n]), []
 function Timers({
   names, groups, customTimers, remCustom,
 }) {
-  remCustom = () => {};
   const [timers, setTimers] = useState(create([...customTimers, ...filter(groups, names)]));
-
+  // temp hack
+  if (names.length > 10000) {
+    remCustom('asdf');
+  }
   useEffect(() => {
     setTimers((prevTimers) => {
       // Look through the previous timers and preserve any that
